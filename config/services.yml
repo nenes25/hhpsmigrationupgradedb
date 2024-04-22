@@ -1,0 +1,7 @@
+services:
+  _defaults:
+    public: true
+  hhennes.migrationupgradedb.command.upgrade:
+    class: Hhennes\PsMigrationUpgradeDb\Command\ApplyPrestashopDbUpgrade
+    tags:
+      - { name: console.command }

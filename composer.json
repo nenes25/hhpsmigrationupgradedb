@@ -1,0 +1,31 @@
+{
+  "name": "hhennes/prestashop-hhpsmigrationupgradedb",
+  "description": "Simplify your db migration when upgrading prestashop",
+  "license": "AFL",
+  "authors": [
+    {
+      "name": "Hervé Hennes",
+      "email": "contact@h-hennes.fr"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Hhennes\\PsMigrationUpgradeDb\\": "src/"
+    }
+  },
+  "config": {
+    "prepend-autoloader": false
+  },
+  "scripts": {
+    "header-stamp": [
+      "vendor/bin/header-stamp --extensions=php,js,css,tpl --exclude=.github,vendor,tests,translations --license=_dev/header-stamp/licence.txt"
+    ],
+    "cs-fixer": [
+      "vendor/bin/php-cs-fixer fix --config tests/php/.php-cs-fixer.dist.php"
+    ]
+  },
+  "type": "prestashop-module",
+  "require-dev": {
+    "prestashop/php-dev-tools": "^4.3"
+  }
+}
