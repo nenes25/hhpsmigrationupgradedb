@@ -39,11 +39,13 @@ class ApplyPrestashopDbUpgrade extends Command
             ->setDescription('Apply db upgrade from current version to last version')
             ->addArgument('from-version', InputArgument::REQUIRED, 'Version from where the db upgrade should start')
             ->addArgument('to-version', InputArgument::REQUIRED, 'Last where the db upgrade should stop')
-            ->addOption('get-version',null, InputOption::VALUE_NONE, 'Get the current db Version')
+            ->addOption('get-version', null, InputOption::VALUE_NONE, 'Get the current db Version')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Get only the list of db upgrades to apply')
             ->setHelp(
                 'This command allow to run db upgrade of the module autoupgrade without running it directly' . PHP_EOL
                 . 'Thus it allows to push the code through CI/CD or to run this command to finish the upgrade after the push' . PHP_EOL
-                . 'You can also get only the current db version with option --get-version'
+                . 'You can also get only the current db version with option --get-version' . PHP_EOL
+                . 'And the list of upgrades which will be applied with the option --dry-run'
             );
     }
 
@@ -62,8 +64,10 @@ class ApplyPrestashopDbUpgrade extends Command
             );
             return 1;
         }
+
         $fromVersion = $input->getArgument('from-version');
         $toVersion = $input->getArgument('to-version');
+        $dryRun = $input->getOption('dry-run');
 
         if (!$this->isvalidPsVersion($fromVersion) || !$this->isvalidPsVersion($toVersion)) {
             $output->writeln('<error>Please enter valid from and to versions</error>');
@@ -73,7 +77,14 @@ class ApplyPrestashopDbUpgrade extends Command
         try {
             $logger = new ConsoleLogger($output);
             $dbUpgrader = new Upgrader($logger);
-            $dbUpgrader->upgradeDb($fromVersion, $toVersion);
+            $dbUpgrader
+                ->setOldVersion($fromVersion)
+                ->setDestinationVersion($toVersion);
+            if (false !== $dryRun) {
+                $output->writeln('<comment>==== Dry run mode, nothing will be applied ===</comment>');
+                $dbUpgrader->setRunMode(Upgrader::RUN_MODE_DRY_RUN);
+            }
+            $dbUpgrader->upgradeDb();
             $output->writeln(sprintf('<info>Db version %s applied with success</info>', $toVersion));
             Configuration::updateValue('PS_VERSION_DB', $toVersion);
         } catch (\Throwable $e) {

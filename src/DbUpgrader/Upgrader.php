@@ -23,8 +23,13 @@ use Psr\Log\LoggerInterface;
 class Upgrader
 {
 
+    public const RUN_MODE_STANDARD = 'standard';
+    public const RUN_MODE_DRY_RUN = 'dry-run';
+
     private string $pathToUpgradeScripts;
     private string $destinationUpgradeVersion;
+    private string $oldVersion;
+    private string $runMode = self::RUN_MODE_STANDARD;
     private LoggerInterface $logger;
     private \Db $db;
 
@@ -39,26 +44,91 @@ class Upgrader
     }
 
     /**
+     * Define destination version
+     *
+     * @param string $destinationVersion
+     * @return Upgrader
+     */
+    public function setDestinationVersion(string $destinationVersion):self
+    {
+        $this->destinationUpgradeVersion = $destinationVersion;
+        return $this;
+    }
+
+    /**
+     * Define old version
+     *
+     * @param string $oldVersion
+     * @return Upgrader
+     */
+    public function setOldVersion(string $oldVersion):self
+    {
+        $this->oldVersion = $oldVersion;
+        return $this;
+    }
+
+    /**
+     * Get version from where we want to migrate
+     *
+     * @return string
+     */
+    public function getOldVersion():string
+    {
+        return $this->oldVersion;
+    }
+
+    /**
+     * Get the version where we want to upgrade
+     *
+     * @return string
+     */
+    public function getDestinationVersion():string
+    {
+        return $this->destinationUpgradeVersion;
+    }
+
+    /**
+     * Get Run mode
+     *
+     * @return string
+     */
+    public function getRunMode(): string
+    {
+        return $this->runMode;
+    }
+
+    /**
+     * Set Run mode
+     *
+     * @param string $runMode
+     * @return Upgrader
+     */
+    public function setRunMode(string $runMode): self
+    {
+        $this->runMode = $runMode;
+        return $this;
+    }
+
+    /**
      * Launch the process to upgrade db
      *
-     * @param string $oldversion
-     * @param string $destinatationVersion
      *
      * @return void
      *
      * @throws UpgradeException
      */
-    public function upgradeDb(string $oldversion,string $destinatationVersion):void
+    public function upgradeDb():void
     {
-        $this->destinationUpgradeVersion = $destinatationVersion;
         $upgrade_dir_sql = $this->pathToUpgradeScripts . '/sql/';
         $sqlContentVersion = $this->applySqlParams(
-            $this->getUpgradeSqlFilesListToApply($upgrade_dir_sql, $oldversion)
+            $this->getUpgradeSqlFilesListToApply($upgrade_dir_sql, $this->getOldVersion())
         );
         foreach ($sqlContentVersion as $upgrade_file => $sqlContent) {
             $this->logger->warning('Apply upgrade file '.$upgrade_file); //We use warning level to have a display in the console
-            foreach ($sqlContent as $query) {
-                $this->runQuery($upgrade_file, $query);
+            if ( $this->getRunMode() == self::RUN_MODE_STANDARD) {
+                foreach ($sqlContent as $query) {
+                    $this->runQuery($upgrade_file, $query);
+                }
             }
         }
     }
@@ -97,7 +167,7 @@ class Upgrader
         natcasesort($upgradeFiles);
 
         foreach ($upgradeFiles as $version) {
-            if (version_compare($version, $oldversion) == 1 && version_compare($this->destinationUpgradeVersion, $version) != -1) {
+            if (version_compare($version, $oldversion) == 1 && version_compare($this->getDestinationVersion(), $version) != -1) {
                 $neededUpgradeFiles[$version] = $upgrade_dir_sql . $version . '.sql';
             }
         }
