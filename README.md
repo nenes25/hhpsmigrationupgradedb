@@ -19,3 +19,26 @@ so for example
 ```
 bin/console hhennes:psmigration:upgrade-db 8.1.3 8.1.5
 ```
+
+
+Compatibility
+---
+
+The prestashop ecosystem must moove forward to modern versions.  
+So this tool is only available with recent Prestashop versions and needs at least php7.4
+
+Feel free to adapt it if you are using older versions.
+
+| Prestashop Version | Compatible |
+|--------------------| ---------|
+| 1.7.8.x | :heavy_check_mark: |
+| 8.0,8.1                 | :heavy_check_mark: |
+
+
+
+| Php Version | Compatible                   |
+|-------------|------------------------------|
+| Under 7.4   | :x:           |
+| 7.4         | :heavy_check_mark:           |
+| 8.0         | :interrobang: Not yet tested |
+| 8.1         | :heavy_check_mark: |
