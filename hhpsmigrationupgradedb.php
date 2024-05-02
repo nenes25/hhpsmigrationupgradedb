@@ -14,14 +14,12 @@
  * @copyright since 2023 Hervé HENNES
  * @license   https://opensource.org/licenses/AFL-3.0  Academic Free License ("AFL") v. 3.0
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 class Hhpsmigrationupgradedb extends Module
 {
-
     public function __construct()
     {
         $this->name = 'hhpsmigrationupgradedb';

@@ -1,0 +1,4 @@
+.github/build.sh
+vendor/*
+logs/*.log
+tests/php/.php-cs-fixer.cache

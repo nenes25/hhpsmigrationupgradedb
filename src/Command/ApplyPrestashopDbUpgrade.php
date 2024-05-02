@@ -17,15 +17,13 @@
 
 namespace Hhennes\PsMigrationUpgradeDb\Command;
 
-use Configuration;
-use Module;
 use Hhennes\PsMigrationUpgradeDb\DbUpgrader\Upgrader;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ApplyPrestashopDbUpgrade extends Command
 {
@@ -56,12 +54,14 @@ class ApplyPrestashopDbUpgrade extends Command
     {
         if ($input->getOption('get-version')) {
             $output->writeln(sprintf('<info>Current Db installed version : %s</info>', $this->getCurrentVersion()));
+
             return 0;
         }
-        if (!Module::getInstanceByName('autoupgrade') || !Module::isInstalled('autoupgrade')) {
+        if (!\Module::getInstanceByName('autoupgrade') || !\Module::isInstalled('autoupgrade')) {
             $output->writeln(
                 '<error>The module autoupgrade is required and should be installed to use this tool</error>'
             );
+
             return 1;
         }
 
@@ -71,6 +71,7 @@ class ApplyPrestashopDbUpgrade extends Command
 
         if (!$this->isvalidPsVersion($fromVersion) || !$this->isvalidPsVersion($toVersion)) {
             $output->writeln('<error>Please enter valid from and to versions</error>');
+
             return 1;
         }
         $output->writeln('<info>Upgrade process start</info>');
@@ -86,12 +87,14 @@ class ApplyPrestashopDbUpgrade extends Command
             }
             $dbUpgrader->upgradeDb();
             $output->writeln(sprintf('<info>Db version %s applied with success</info>', $toVersion));
-            Configuration::updateValue('PS_VERSION_DB', $toVersion);
+            \Configuration::updateValue('PS_VERSION_DB', $toVersion);
         } catch (\Throwable $e) {
             $output->writeln('<error>Unable to apply upgrade, please check logs</error>');
             $logger->error('Error : ' . $e->getMessage());
+
             return 1;
         }
+
         return 0;
     }
 
@@ -102,7 +105,7 @@ class ApplyPrestashopDbUpgrade extends Command
      */
     protected function getCurrentVersion(): string
     {
-        return Configuration::get('PS_VERSION_DB');
+        return \Configuration::get('PS_VERSION_DB');
     }
 
     /**
@@ -111,11 +114,11 @@ class ApplyPrestashopDbUpgrade extends Command
      * Only from the one where the console is available
      *
      * @param string $psVersion
+     *
      * @return bool
      */
     protected function isvalidPsVersion(string $psVersion): bool
     {
         return preg_match('#^(1\.7.[5-8].[0-9]{1,2}|8.[0-1].[0-9])#', $psVersion);
     }
-
 }
