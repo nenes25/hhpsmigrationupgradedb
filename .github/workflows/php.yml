@@ -1,7 +1,11 @@
 name: PHP tests
-on: [ push, pull_request ]
-paths-ignore:
-  - '**/README.md'
+on:
+  push:
+    paths-ignore:
+      - '**/README.md'
+  pull_request:
+    paths-ignore:
+      - '**/README.md'
 jobs:
   php-linter:
     name: PHP Syntax check 7.4|8.0|8.1|8.2
