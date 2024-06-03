@@ -32,7 +32,7 @@ Feel free to adapt it if you are using older versions.
 | Prestashop Version | Compatible |
 |--------------------| ---------|
 | 1.7.8.x | :heavy_check_mark: |
-| 8.0,8.1                 | :heavy_check_mark: |
+| 8.0,8.1 | :heavy_check_mark: |
 
 
 
