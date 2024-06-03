@@ -11,7 +11,7 @@ As the time of the creation of this module there no easy way to do it.
 With this module you can now apply your db migration easily with a simple command
 
 ```
-bin/console hhennes:psmigration:upgrade-db fromVersion toVersion'
+bin/console hhennes:psmigration:upgrade-db fromVersion toVersion
 ```
 
 so for example
