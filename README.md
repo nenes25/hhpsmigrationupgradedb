@@ -42,3 +42,5 @@ Feel free to adapt it if you are using older versions.
 | 7.4         | :heavy_check_mark:           |
 | 8.0         | :interrobang: Not yet tested |
 | 8.1         | :heavy_check_mark: |
+| 8.2         | :interrobang: Not yet tested |
+| 8.3         | :interrobang: Not yet tested |
