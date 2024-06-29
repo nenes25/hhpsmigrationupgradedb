@@ -254,7 +254,7 @@ class Upgrader
         // Call a simple function
         if (strpos($phpString, '::') === false) {
             $func_name = str_replace($pattern[0], '', $php[0]);
-            $pathToPhpDirectory = $this->pathToUpgradeScripts . 'php/';
+            $pathToPhpDirectory = $this->pathToUpgradeScripts . '/php/';
 
             if (!file_exists($pathToPhpDirectory . strtolower($func_name) . '.php')) {
                 $this->logger->error('[ERROR] ' . $pathToPhpDirectory . strtolower($func_name) . ' PHP - missing file ' . $query);
