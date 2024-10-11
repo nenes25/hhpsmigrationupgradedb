@@ -27,6 +27,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ApplyPrestashopDbUpgrade extends Command
 {
+    const PS_VERSIONS_REGEXP = '#^(1\.7.[5-8].[0-9]{1,2}|8.[0-2].[0-9])#';
+
     /**
      * {@inheritdoc}
      */
@@ -119,6 +121,6 @@ class ApplyPrestashopDbUpgrade extends Command
      */
     protected function isvalidPsVersion(string $psVersion): bool
     {
-        return preg_match('#^(1\.7.[5-8].[0-9]{1,2}|8.[0-1].[0-9])#', $psVersion);
+        return preg_match(self::PS_VERSIONS_REGEXP, $psVersion);
     }
 }
