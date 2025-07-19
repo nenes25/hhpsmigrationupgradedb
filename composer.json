@@ -16,6 +16,9 @@
   "config": {
     "prepend-autoloader": false
   },
+  "require": {
+    "php": "^7.4 || ^8.1 <8.5"
+  },
   "scripts": {
     "header-stamp": [
       "vendor/bin/header-stamp --extensions=php,js,css,tpl --exclude=.github,vendor,tests,translations --license=_dev/header-stamp/licence.txt"

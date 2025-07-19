@@ -31,8 +31,9 @@ Feel free to adapt it if you are using older versions.
 
 | Prestashop Version | Compatible |
 |--------------------| ---------|
-| 1.7.8.x | :heavy_check_mark: |
-| 8.0,8.1 | :heavy_check_mark: |
+| 1.7.8.x            | :heavy_check_mark: |
+| 8.x                | :heavy_check_mark: |
+| 9.0                | :heavy_check_mark: |
 
 
 
@@ -40,7 +41,8 @@ Feel free to adapt it if you are using older versions.
 |-------------|------------------------------|
 | Under 7.4   | :x:           |
 | 7.4         | :heavy_check_mark:           |
-| 8.0         | :interrobang: Not yet tested |
+| 8.0         | :x: |
 | 8.1         | :heavy_check_mark: |
-| 8.2         | :interrobang: Not yet tested |
-| 8.3         | :interrobang: Not yet tested |
+| 8.2         | :heavy_check_mark:|
+| 8.3         | :heavy_check_mark: |
+| 8.4         | :heavy_check_mark: |

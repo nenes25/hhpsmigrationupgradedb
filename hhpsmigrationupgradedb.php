@@ -24,7 +24,7 @@ class Hhpsmigrationupgradedb extends Module
     {
         $this->name = 'hhpsmigrationupgradedb';
         $this->tab = 'others';
-        $this->version = '0.1.2';
+        $this->version = '0.1.3';
         $this->author = 'hhennes';
         $this->bootstrap = true;
         $this->dependencies = ['autoupgrade'];
