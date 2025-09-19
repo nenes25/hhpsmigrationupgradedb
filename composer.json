@@ -1,7 +1,7 @@
 {
   "name": "hhennes/prestashop-hhpsmigrationupgradedb",
   "description": "Simplify your db migration when upgrading prestashop",
-  "license": "AFL",
+  "license": "AFL-3.0",
   "authors": [
     {
       "name": "Hervé Hennes",
