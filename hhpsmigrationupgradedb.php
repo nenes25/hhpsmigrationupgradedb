@@ -28,7 +28,7 @@ class Hhpsmigrationupgradedb extends Module
         $this->author = 'hhennes';
         $this->bootstrap = true;
         $this->dependencies = ['autoupgrade'];
-        $this->ps_versions_compliancy = ['min' => '1.7.5.0', 'max' => '8.2.*'];
+        $this->ps_versions_compliancy = ['min' => '1.7.5.0', 'max' => '8.3'];
         parent::__construct();
 
         $this->displayName = $this->l('Hh migration upgrade db');
