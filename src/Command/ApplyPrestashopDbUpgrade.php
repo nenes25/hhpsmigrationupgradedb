@@ -41,6 +41,7 @@ class ApplyPrestashopDbUpgrade extends Command
             ->addArgument('to-version', InputArgument::REQUIRED, 'Last where the db upgrade should stop')
             ->addOption('get-version', null, InputOption::VALUE_NONE, 'Get the current db Version')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Get only the list of db upgrades to apply')
+            ->addOption('no-db-config-update', null, InputOption::VALUE_NONE, 'Do not update the PS_VERSION_DB configuration')
             ->setHelp(
                 'This command allow to run db upgrade of the module autoupgrade without running it directly' . PHP_EOL
                 . 'Thus it allows to push the code through CI/CD or to run this command to finish the upgrade after the push' . PHP_EOL
@@ -89,7 +90,9 @@ class ApplyPrestashopDbUpgrade extends Command
             }
             $dbUpgrader->upgradeDb();
             $output->writeln(sprintf('<info>Db version %s applied with success</info>', $toVersion));
-            \Configuration::updateValue('PS_VERSION_DB', $toVersion);
+            if (!$input->getOption('no-db-config-update')) {
+                \Configuration::updateValue('PS_VERSION_DB', $toVersion);
+            }
         } catch (\Throwable $e) {
             $output->writeln('<error>Unable to apply upgrade, please check logs</error>');
             $logger->error('Error : ' . $e->getMessage());
