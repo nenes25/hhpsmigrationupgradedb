@@ -14,17 +14,29 @@ concurrency:
   cancel-in-progress: true
 jobs:
   php-linter:
-    name: PHP Syntax check 7.4|8.0|8.1|8.2
+    name: PHP Syntax check 7.4|8.1|8.2|8.3|8.4
     runs-on: ubuntu-latest
     steps:
       - name: PHP syntax checker 7.4
-        uses: prestashop/github-action-php-lint/7.4@master
-      - name: PHP syntax checker 8.0
-        uses: prestashop/github-action-php-lint/8.0@master
+        uses: prestashop/github-action-php-lint/7.4@v1
+        with:
+          folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.1
-        uses: prestashop/github-action-php-lint/8.1@master
+        uses: prestashop/github-action-php-lint/8.1@v1
+        with:
+              folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.2
-        uses: prestashop/github-action-php-lint/8.2@master
+        uses: prestashop/github-action-php-lint/8.2@v1
+        with:
+          folder-to-exclude: "! -path \"./vendor/*\""
+      - name: PHP syntax checker 8.3
+        uses: prestashop/github-action-php-lint/8.3@v1
+        with:
+          folder-to-exclude: "! -path \"./vendor/*\""
+      - name: PHP syntax checker 8.4
+        uses: prestashop/github-action-php-lint/8.4@v1
+        with:
+          folder-to-exclude: "! -path \"./vendor/*\""
 
   # Check the PHP code follow the coding standards
   php-cs-fixer:
@@ -34,7 +46,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.1'
       - name: Checkout
         uses: actions/checkout@v3.1.0
       - name: Cache dependencies
