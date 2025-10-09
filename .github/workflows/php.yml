@@ -18,23 +18,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PHP syntax checker 7.4
-        uses: prestashop/github-action-php-lint/7.4@v1
+        uses: prestashop/github-action-php-lint/7.4@master
         with:
           folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.1
-        uses: prestashop/github-action-php-lint/8.1@v1
+        uses: prestashop/github-action-php-lint/8.1@master
         with:
               folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.2
-        uses: prestashop/github-action-php-lint/8.2@v1
+        uses: prestashop/github-action-php-lint/8.2@master
         with:
           folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.3
-        uses: prestashop/github-action-php-lint/8.3@v1
+        uses: prestashop/github-action-php-lint/8.3@master
         with:
           folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.4
-        uses: prestashop/github-action-php-lint/8.4@v1
+        uses: prestashop/github-action-php-lint/8.4@master
         with:
           folder-to-exclude: "! -path \"./vendor/*\""
 
