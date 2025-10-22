@@ -26,6 +26,7 @@
   },
   "type": "prestashop-module",
   "require-dev": {
-    "prestashop/php-dev-tools": "^4.3"
+    "prestashop/php-dev-tools": "^4.3",
+    "phpunit/phpunit": "^9.6"
   }
 }
