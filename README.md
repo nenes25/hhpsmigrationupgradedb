@@ -39,7 +39,7 @@ Each of these options can be combined with the main arguments to adapt the comma
 Compatibility
 ---
 
-The prestashop ecosystem must moove forward to modern versions.  
+The prestashop ecosystem must move forward to modern versions.  
 So this tool is only available with recent Prestashop versions and needs at least php7.4
 
 Feel free to adapt it if you are using older versions.
