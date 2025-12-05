@@ -22,6 +22,7 @@ use Psr\Log\LoggerInterface;
 
 class Upgrader
 {
+
     public const RUN_MODE_STANDARD = 'standard';
     public const RUN_MODE_DRY_RUN = 'dry-run';
 
@@ -37,7 +38,7 @@ class Upgrader
      */
     public function __construct(LoggerInterface $logger)
     {
-        $this->pathToUpgradeScripts = _PS_MODULE_DIR_ . 'autoupgrade/upgrade';
+        $this->pathToUpgradeScripts = _PS_MODULE_DIR_.'autoupgrade/upgrade/';
         $this->db = \Db::getInstance();
         $this->logger = $logger;
     }
@@ -46,13 +47,11 @@ class Upgrader
      * Define destination version
      *
      * @param string $destinationVersion
-     *
      * @return Upgrader
      */
-    public function setDestinationVersion(string $destinationVersion): self
+    public function setDestinationVersion(string $destinationVersion):self
     {
         $this->destinationUpgradeVersion = $destinationVersion;
-
         return $this;
     }
 
@@ -60,13 +59,11 @@ class Upgrader
      * Define old version
      *
      * @param string $oldVersion
-     *
      * @return Upgrader
      */
-    public function setOldVersion(string $oldVersion): self
+    public function setOldVersion(string $oldVersion):self
     {
         $this->oldVersion = $oldVersion;
-
         return $this;
     }
 
@@ -75,7 +72,7 @@ class Upgrader
      *
      * @return string
      */
-    public function getOldVersion(): string
+    public function getOldVersion():string
     {
         return $this->oldVersion;
     }
@@ -85,7 +82,7 @@ class Upgrader
      *
      * @return string
      */
-    public function getDestinationVersion(): string
+    public function getDestinationVersion():string
     {
         return $this->destinationUpgradeVersion;
     }
@@ -104,32 +101,31 @@ class Upgrader
      * Set Run mode
      *
      * @param string $runMode
-     *
      * @return Upgrader
      */
     public function setRunMode(string $runMode): self
     {
         $this->runMode = $runMode;
-
         return $this;
     }
 
     /**
      * Launch the process to upgrade db
      *
+     *
      * @return void
      *
      * @throws UpgradeException
      */
-    public function upgradeDb(): void
+    public function upgradeDb():void
     {
         $upgrade_dir_sql = $this->pathToUpgradeScripts . '/sql/';
         $sqlContentVersion = $this->applySqlParams(
             $this->getUpgradeSqlFilesListToApply($upgrade_dir_sql, $this->getOldVersion())
         );
         foreach ($sqlContentVersion as $upgrade_file => $sqlContent) {
-            $this->logger->warning('Apply upgrade file ' . $upgrade_file); // We use warning level to have a display in the console
-            if ($this->getRunMode() == self::RUN_MODE_STANDARD) {
+            $this->logger->warning('Apply upgrade file '.$upgrade_file); //We use warning level to have a display in the console
+            if ( $this->getRunMode() == self::RUN_MODE_STANDARD) {
                 foreach ($sqlContent as $query) {
                     $this->runQuery($upgrade_file, $query);
                 }
@@ -144,10 +140,9 @@ class Upgrader
      * @param string $oldversion
      *
      * @return array
-     *
      * @throws UpgradeException
      */
-    protected function getUpgradeSqlFilesListToApply(string $upgrade_dir_sql, string $oldversion): array
+    protected function getUpgradeSqlFilesListToApply(string $upgrade_dir_sql, string $oldversion):array
     {
         if (!file_exists($upgrade_dir_sql)) {
             throw new UpgradeException('Unable to find upgrade directory in the installation path.');
@@ -167,7 +162,7 @@ class Upgrader
             closedir($handle);
         }
         if (empty($upgradeFiles)) {
-            throw new UpgradeException(sprintf('Cannot find the SQL upgrade files. Please check that the %s folder is not empty.', $upgrade_dir_sql));
+            throw new UpgradeException(sprintf('Cannot find the SQL upgrade files. Please check that the %s folder is not empty.',$upgrade_dir_sql));
         }
         natcasesort($upgradeFiles);
 
@@ -187,10 +182,10 @@ class Upgrader
      *
      * @return array of SQL requests per version
      */
-    protected function applySqlParams(array $sqlFiles): array
+    protected function applySqlParams(array $sqlFiles):array
     {
         $search = ['PREFIX_', 'ENGINE_TYPE', 'DB_NAME'];
-        $replace = [_DB_PREFIX_, defined('_MYSQL_ENGINE_') ? _MYSQL_ENGINE_ : 'MyISAM', _DB_NAME_];
+        $replace = [_DB_PREFIX_, (defined('_MYSQL_ENGINE_') ? _MYSQL_ENGINE_ : 'MyISAM'), _DB_NAME_];
 
         $sqlRequests = [];
 
@@ -208,6 +203,7 @@ class Upgrader
      * Run Query (Fonction from module Autoupgrade)
      *
      * @param string $upgrade_file File in which the request is stored (for logs)
+     *
      * @param string $query
      *
      * @return void|null
@@ -226,7 +222,7 @@ class Upgrader
     }
 
     /**
-     * Run php query (Fonction from module Autoupgrade)
+     * Run php query (Compatible with old and new autoupgrade versions)
      *
      * @param string $upgrade_file
      * @param string $query
@@ -241,12 +237,21 @@ class Upgrader
         $php = explode('::', $phpString);
         preg_match('/\((.*)\)/', $phpString, $pattern);
         $paramsString = trim($pattern[0], '()');
-        preg_match_all('/([^,]+),? ?/', $paramsString, $parameters);
-        $parameters = (isset($parameters[1]) && is_array($parameters[1])) ?
-            $parameters[1] :
-            [];
-        foreach ($parameters as &$parameter) {
-            $parameter = str_replace('\'', '', $parameter);
+
+        // Try new method with eval (for PS 9.0+)
+        $parameters = [];
+        if (!empty($paramsString)) {
+            $code = "return [$paramsString];";
+            try {
+                $parameters = @eval($code);
+                if ($parameters === false || !is_array($parameters)) {
+                    // Fallback to old method for compatibility
+                    $parameters = $this->parseParametersOldMethod($paramsString);
+                }
+            } catch (\ParseError $e) {
+                // Fallback to old method for compatibility
+                $parameters = $this->parseParametersOldMethod($paramsString);
+            }
         }
 
         // reset phpRes to a null value
@@ -254,11 +259,10 @@ class Upgrader
         // Call a simple function
         if (strpos($phpString, '::') === false) {
             $func_name = str_replace($pattern[0], '', $php[0]);
-            $pathToPhpDirectory = $this->pathToUpgradeScripts . '/php/';
+            $pathToPhpDirectory = $this->pathToUpgradeScripts . 'php/';
 
             if (!file_exists($pathToPhpDirectory . strtolower($func_name) . '.php')) {
                 $this->logger->error('[ERROR] ' . $pathToPhpDirectory . strtolower($func_name) . ' PHP - missing file ' . $query);
-
                 return;
             }
 
@@ -269,7 +273,6 @@ class Upgrader
         else {
             $func_name = [$php[0], str_replace($pattern[0], '', $php[1])];
             $this->logger->error('[ERROR] ' . $upgrade_file . ' PHP - Object Method call is forbidden (' . $php[0] . '::' . str_replace($pattern[0], '', $php[1]) . ')');
-            $this->container->getState()->setWarningExists(true);
 
             return;
         }
@@ -282,6 +285,24 @@ class Upgrader
         } else {
             $this->logger->debug('<div class="upgradeDbOk">[OK] PHP ' . $upgrade_file . ' : ' . $query . '</div>');
         }
+    }
+
+    /**
+     * Parse parameters using old method (for backward compatibility)
+     *
+     * @param string $paramsString
+     * @return array
+     */
+    protected function parseParametersOldMethod(string $paramsString): array
+    {
+        preg_match_all('/([^,]+),? ?/', $paramsString, $matches);
+        $parameters = (isset($matches[1]) && is_array($matches[1])) ?
+            $matches[1] :
+            [];
+        foreach ($parameters as &$parameter) {
+            $parameter = str_replace('\'', '', $parameter);
+        }
+        return $parameters;
     }
 
     /**
@@ -300,7 +321,7 @@ class Upgrader
             if (!empty($matches[1])) {
                 $drop = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . $matches[1] . '`;';
                 if ($this->db->execute($drop, false)) {
-                    $this->logger->debug('<div class="upgradeDbOk">' . $this->container->getTranslator()->trans('[DROP] SQL %s table has been dropped.', ['`' . _DB_PREFIX_ . $matches[1] . '`'], 'Modules.Autoupgrade.Admin') . '</div>');
+                    $this->logger->debug('[DROP] SQL `' . _DB_PREFIX_ . $matches[1] . '` table has been dropped.');
                 }
             }
         }
@@ -323,4 +344,5 @@ class Upgrader
             $this->logger->error('SQL ' . $upgrade_file . ' ' . $error_number . ' in ' . $query . ': ' . $error);
         }
     }
+
 }

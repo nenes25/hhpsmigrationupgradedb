@@ -27,7 +27,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ApplyPrestashopDbUpgrade extends Command
 {
-    const PS_VERSIONS_REGEXP = '#^(1\.7.[5-8].[0-9]{1,2}|8.[0-2].[0-9])#';
+    const PS_VERSIONS_REGEXP = '#^(1\.7.[5-8].[0-9]{1,2}|8.[0-2].[0-9]|9.0.[0-9]|9.1.[0-9])#';
 
     /**
      * {@inheritdoc}
