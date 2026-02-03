@@ -9,31 +9,31 @@ help: ## Affiche l'aide
 
 up: ## Démarre l'environnement PrestaShop
 	@echo "🚀 Démarrage de PrestaShop ${PS_VERSION}..."
-	docker-compose up -d
+	docker compose up -d
 	@echo "✅ PrestaShop ${PS_VERSION} disponible sur http://localhost:${PS_PORT}"
 	@echo "✅ phpMyAdmin disponible sur http://localhost:${PMA_PORT}"
 
 down: ## Arrête l'environnement
 	@echo "🛑 Arrêt de PrestaShop ${PS_VERSION}..."
-	docker-compose down
+	docker compose down
 
 restart: down up ## Redémarre l'environnement
 
 logs: ## Affiche les logs
-	docker-compose logs -f prestashop
+	docker compose logs -f prestashop
 
 shell: ## Accède au shell du container PrestaShop
-	docker-compose exec prestashop bash
+	docker compose exec prestashop bash
 
 install: ## Installe les dépendances
-	docker-compose exec prestashop composer install
+	docker compose exec prestashop composer install
 
 test: ## Lance les tests
-	docker-compose exec prestashop php bin/console hhennes:psmigration:upgrade-db --get-version
+	docker compose exec prestashop php bin/console hhennes:psmigration:upgrade-db --get-version
 
 clean: ## Supprime complètement l'environnement (⚠️ supprime les données)
 	@echo "⚠️  Suppression de PrestaShop ${PS_VERSION} et de ses données..."
-	docker-compose down -v
+	docker compose down -v
 	docker volume rm $$(docker volume ls -q | grep ${PS_VERSION}) 2>/dev/null || true
 
 ps-install: up ## Lance l'installation et ouvre le navigateur
@@ -68,15 +68,15 @@ switch: ## Change la version de PrestaShop (usage interne)
 # Lancer plusieurs versions simultanément
 multi: ## Lance toutes les versions en parallèle
 	@echo "🚀 Lancement de plusieurs versions de PrestaShop..."
-	PS_VERSION=8.1 PS_PORT=8080 MYSQL_PORT=3306 PMA_PORT=8081 docker-compose -p ps81 up -d
-	PS_VERSION=8.0.5 PS_PORT=8082 MYSQL_PORT=3307 PMA_PORT=8083 docker-compose -p ps80 up -d
-	PS_VERSION=1.7.8.11 PS_PORT=8084 MYSQL_PORT=3308 PMA_PORT=8085 docker-compose -p ps17 up -d
+	PS_VERSION=8.1 PS_PORT=8080 MYSQL_PORT=3306 PMA_PORT=8081 docker compose -p ps81 up -d
+	PS_VERSION=8.0.5 PS_PORT=8082 MYSQL_PORT=3307 PMA_PORT=8083 docker compose -p ps80 up -d
+	PS_VERSION=1.7.8.11 PS_PORT=8084 MYSQL_PORT=3308 PMA_PORT=8085 docker compose -p ps17 up -d
 	@echo "✅ Versions disponibles:"
 	@echo "   - PrestaShop 8.1:     http://localhost:8080"
 	@echo "   - PrestaShop 8.0.5:   http://localhost:8082"
 	@echo "   - PrestaShop 1.7.8:   http://localhost:8084"
 
 multi-down: ## Arrête toutes les versions
-	docker-compose -p ps81 down
-	docker-compose -p ps80 down
-	docker-compose -p ps17 down
+	docker compose -p ps81 down
+	docker compose -p ps80 down
+	docker compose -p ps17 down
