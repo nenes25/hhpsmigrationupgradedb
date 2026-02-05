@@ -69,14 +69,17 @@ This module includes a Docker-based development environment for easy testing acr
 Switch between PrestaShop versions easily:
 
 ```bash
+# Switch to PrestaShop 1.7.8
+make switch-1.7.8 && make up
+
 # Switch to PrestaShop 8.1
 make switch-8.1 && make up
 
-# Switch to PrestaShop 8.0
-make switch-8.0 && make up
+# Switch to PrestaShop 9
+make switch-9 && make up
 
-# Switch to PrestaShop 1.7.8
-make switch-1.7.8 && make up
+# Switch to PrestaShop nightly
+make switch-nightly && make up
 ```
 
 Or run multiple versions simultaneously:
@@ -86,9 +89,10 @@ make multi
 ```
 
 This will start:
-- PrestaShop 8.1 on `http://localhost:8080`
-- PrestaShop 8.0.5 on `http://localhost:8082`
-- PrestaShop 1.7.8 on `http://localhost:8084`
+- PrestaShop 1.7.8 on `http://localhost:8080`
+- PrestaShop 8.1 on `http://localhost:8082`
+- PrestaShop 9 on `http://localhost:8084`
+- PrestaShop nightly on `http://localhost:8086`
 
 ### PHPStorm Integration
 

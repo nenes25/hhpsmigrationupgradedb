@@ -43,14 +43,17 @@ ps-install: up ## Start installation and open browser
 	@command -v open >/dev/null && open http://localhost:${PS_PORT} || echo "Open http://localhost:${PS_PORT} in your browser"
 
 # Version switching commands
-switch-8.1: ## Switch to PrestaShop 8.1
-	@$(MAKE) switch PS_VERSION=8.1 PS_PORT=8080 MYSQL_PORT=3306 PMA_PORT=8081
-
-switch-8.0: ## Switch to PrestaShop 8.0
-	@$(MAKE) switch PS_VERSION=8.0.5 PS_PORT=8082 MYSQL_PORT=3307 PMA_PORT=8083
-
 switch-1.7.8: ## Switch to PrestaShop 1.7.8
-	@$(MAKE) switch PS_VERSION=1.7.8.11 PS_PORT=8084 MYSQL_PORT=3308 PMA_PORT=8085
+	@$(MAKE) switch PS_VERSION=1.7.8 PS_PORT=8080 MYSQL_PORT=3306 PMA_PORT=8081
+
+switch-8.1: ## Switch to PrestaShop 8.1
+	@$(MAKE) switch PS_VERSION=8.1 PS_PORT=8082 MYSQL_PORT=3307 PMA_PORT=8083
+
+switch-9: ## Switch to PrestaShop 9
+	@$(MAKE) switch PS_VERSION=9 PS_PORT=8084 MYSQL_PORT=3308 PMA_PORT=8085
+
+switch-nightly: ## Switch to PrestaShop nightly
+	@$(MAKE) switch PS_VERSION=nightly PS_PORT=8086 MYSQL_PORT=3309 PMA_PORT=8087
 
 switch: ## Change PrestaShop version (internal use)
 	@echo "PS_VERSION=${PS_VERSION}" > .env
@@ -68,15 +71,18 @@ switch: ## Change PrestaShop version (internal use)
 # Run multiple versions simultaneously
 multi: ## Start all versions in parallel
 	@echo "🚀 Starting multiple PrestaShop versions..."
-	PS_VERSION=8.1 PS_PORT=8080 MYSQL_PORT=3306 PMA_PORT=8081 docker compose -p ps81 up -d
-	PS_VERSION=8.0.5 PS_PORT=8082 MYSQL_PORT=3307 PMA_PORT=8083 docker compose -p ps80 up -d
-	PS_VERSION=1.7.8.11 PS_PORT=8084 MYSQL_PORT=3308 PMA_PORT=8085 docker compose -p ps17 up -d
+	PS_VERSION=1.7.8 PS_PORT=8080 MYSQL_PORT=3306 PMA_PORT=8081 docker compose -p ps178 up -d
+	PS_VERSION=8.1 PS_PORT=8082 MYSQL_PORT=3307 PMA_PORT=8083 docker compose -p ps81 up -d
+	PS_VERSION=9 PS_PORT=8084 MYSQL_PORT=3308 PMA_PORT=8085 docker compose -p ps9 up -d
+	PS_VERSION=nightly PS_PORT=8086 MYSQL_PORT=3309 PMA_PORT=8087 docker compose -p psnightly up -d
 	@echo "✅ Available versions:"
-	@echo "   - PrestaShop 8.1:     http://localhost:8080"
-	@echo "   - PrestaShop 8.0.5:   http://localhost:8082"
-	@echo "   - PrestaShop 1.7.8:   http://localhost:8084"
+	@echo "   - PrestaShop 1.7.8:   http://localhost:8080"
+	@echo "   - PrestaShop 8.1:     http://localhost:8082"
+	@echo "   - PrestaShop 9:       http://localhost:8084"
+	@echo "   - PrestaShop nightly: http://localhost:8086"
 
 multi-down: ## Stop all versions
+	docker compose -p ps178 down
 	docker compose -p ps81 down
-	docker compose -p ps80 down
-	docker compose -p ps17 down
+	docker compose -p ps9 down
+	docker compose -p psnightly down
