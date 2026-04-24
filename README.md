@@ -48,14 +48,16 @@ Feel free to adapt it if you are using older versions.
 |--------------------| ---------|
 | 1.7.8.x            | :heavy_check_mark: |
 | 8.x                | :heavy_check_mark: |
-| 9.x                | :x: |
+| 9.x                | :heavy_check_mark: |
 
 
 
-| Php Version | Compatible                   |
-|-------------|------------------------------|
-| Under 7.4   | :x:           |
-| 7.4         | :heavy_check_mark:           |
-| 8.1         | :heavy_check_mark: |
-| 8.2         | :interrobang: Not yet tested |
-| 8.3         | :interrobang: Not yet tested |
+| Php Version | Compatible                         |
+|-------------|------------------------------------|
+| Under 7.4   | :x:                                |
+| 7.4         | :heavy_check_mark:     until 0.1.4 |
+| 8.1         | :heavy_check_mark:                 |
+| 8.2         | :interrobang: Not yet tested       |
+| 8.3         | :interrobang: Not yet tested       |
+| 8.4         | :interrobang: Not yet tested       |
+| 8.5         | :interrobang: Not yet tested       |
