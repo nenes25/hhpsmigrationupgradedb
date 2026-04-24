@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   php-linter:
-    name: PHP Syntax check 7.4|8.1|8.2|8.3|8.4
+    name: PHP Syntax check 7.4|8.1|8.2|8.3|8.4|8.5
     runs-on: ubuntu-latest
     steps:
       - name: PHP syntax checker 7.4
@@ -35,6 +35,10 @@ jobs:
           folder-to-exclude: "! -path \"./vendor/*\""
       - name: PHP syntax checker 8.4
         uses: prestashop/github-action-php-lint/8.4@master
+        with:
+          folder-to-exclude: "! -path \"./vendor/*\""
+      - name: PHP syntax checker 8.5
+        uses: prestashop/github-action-php-lint/8.5@master
         with:
           folder-to-exclude: "! -path \"./vendor/*\""
 

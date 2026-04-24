@@ -24,11 +24,11 @@ class Hhpsmigrationupgradedb extends Module
     {
         $this->name = 'hhpsmigrationupgradedb';
         $this->tab = 'others';
-        $this->version = '0.1.4';
+        $this->version = '0.1.5';
         $this->author = 'hhennes';
         $this->bootstrap = true;
         $this->dependencies = ['autoupgrade'];
-        $this->ps_versions_compliancy = ['min' => '1.7.5.0', 'max' => '8.3'];
+        $this->ps_versions_compliancy = ['min' => '1.7.8.0', 'max' => '9.1.99'];
         parent::__construct();
 
         $this->displayName = $this->l('Hh migration upgrade db');
