@@ -36,6 +36,81 @@ Several options are available to tailor the behavior of the `hhennes:psmigration
 Each of these options can be combined with the main arguments to adapt the command to your needs.
 
 
+Development Environment
+---
+
+This module includes a Docker-based development environment for easy testing across multiple PrestaShop versions.
+
+### Quick Start
+
+1. Copy the environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Start the environment:
+   ```bash
+   make up
+   ```
+
+3. Access PrestaShop at `http://localhost:8080`
+
+### Available Commands
+
+- `make up` - Start the PrestaShop environment
+- `make down` - Stop the environment
+- `make logs` - View container logs
+- `make shell` - Access the PrestaShop container shell
+- `make install` - Install composer dependencies
+- `make clean` - Remove all containers and volumes
+
+### Testing Multiple PrestaShop Versions
+
+Switch between PrestaShop versions easily:
+
+```bash
+# Switch to PrestaShop 1.7.8
+make switch-1.7.8 && make up
+
+# Switch to PrestaShop 8.1
+make switch-8.1 && make up
+
+# Switch to PrestaShop 9
+make switch-9 && make up
+
+# Switch to PrestaShop nightly
+make switch-nightly && make up
+```
+
+Or run multiple versions simultaneously:
+
+```bash
+make multi
+```
+
+This will start:
+- PrestaShop 1.7.8 on `http://localhost:8080`
+- PrestaShop 8.1 on `http://localhost:8082`
+- PrestaShop 9 on `http://localhost:8084`
+- PrestaShop nightly on `http://localhost:8086`
+
+### PHPStorm Integration
+
+The environment includes Xdebug support for debugging with PHPStorm:
+
+1. Go to **Settings → PHP → Servers**
+2. Add a new server with name `localhost`
+3. Set path mapping: `/var/www/html/modules/hhpsmigrationupgradedb` → project root
+4. Start listening for debug connections
+
+### Database Access
+
+- **phpMyAdmin**: `http://localhost:8081`
+- **MySQL Host**: `localhost:3306`
+- **Username**: `prestashop`
+- **Password**: `prestashop`
+
+
 Compatibility
 ---
 
