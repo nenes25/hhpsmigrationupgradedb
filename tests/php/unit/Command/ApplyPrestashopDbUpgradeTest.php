@@ -20,6 +20,7 @@ namespace Hhennes\PsMigrationUpgradeDb\Tests\Unit\Command;
 use Hhennes\PsMigrationUpgradeDb\Command\ApplyPrestashopDbUpgrade;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ApplyPrestashopDbUpgradeTest extends TestCase
@@ -113,18 +114,15 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
         $this->assertStringContainsString('Apply db upgrade', $this->command->getDescription());
     }
 
-    public function testCommandHasRequiredArguments()
+    public function testCommandHasOptionalArguments()
     {
         $definition = $this->command->getDefinition();
 
         $this->assertTrue($definition->hasArgument('from-version'));
         $this->assertTrue($definition->hasArgument('to-version'));
 
-        $fromVersionArg = $definition->getArgument('from-version');
-        $toVersionArg = $definition->getArgument('to-version');
-
-        $this->assertTrue($fromVersionArg->isRequired());
-        $this->assertTrue($toVersionArg->isRequired());
+        $this->assertFalse($definition->getArgument('from-version')->isRequired());
+        $this->assertFalse($definition->getArgument('to-version')->isRequired());
     }
 
     public function testCommandHasExpectedOptions()
@@ -136,18 +134,35 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
         $this->assertTrue($definition->hasOption('no-db-config-update'));
     }
 
-    public function testGetVersionOption()
+    public function testGetVersionOptionWithoutArguments()
     {
-        $this->commandTester->execute([
-            'from-version' => '1.7.7.0',
-            'to-version' => '1.7.8.0',
-            '--get-version' => true,
-        ]);
+        $this->commandTester->execute(['--get-version' => true]);
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Current Db installed version', $output);
         $this->assertStringContainsString('1.7.8.0', $output);
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
+    }
+
+    public function testMissingToVersionReturnsError()
+    {
+        $this->commandTester->execute([]);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('to-version is required', $output);
+        $this->assertEquals(Command::FAILURE, $this->commandTester->getStatusCode());
+    }
+
+    public function testFromVersionDefaultsToCurrentVersion()
+    {
+        $this->commandTester->execute([
+            'to-version' => '1.7.8.1',
+        ]);
+
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString('Upgrade process start', $output);
+        $this->assertStringContainsString('applied with success', $output);
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testInvalidFromVersionReturnsError()
@@ -159,7 +174,7 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Please enter valid from and to versions', $output);
-        $this->assertEquals(1, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::FAILURE, $this->commandTester->getStatusCode());
     }
 
     public function testInvalidToVersionReturnsError()
@@ -171,7 +186,7 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Please enter valid from and to versions', $output);
-        $this->assertEquals(1, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::FAILURE, $this->commandTester->getStatusCode());
     }
 
     public function testValidVersionsWithDryRun()
@@ -185,7 +200,7 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Upgrade process start', $output);
         $this->assertStringContainsString('Dry run mode', $output);
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testValidVersionsWithUpgrade()
@@ -198,7 +213,7 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Upgrade process start', $output);
         $this->assertStringContainsString('applied with success', $output);
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testNoDbConfigUpdateOption()
@@ -211,7 +226,7 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('applied with success', $output);
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testValidPs17Versions()
@@ -221,7 +236,7 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
             'to-version' => '1.7.8.9',
         ]);
 
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     public function testValidPs80Versions()
@@ -231,6 +246,6 @@ class ApplyPrestashopDbUpgradeTest extends TestCase
             'to-version' => '8.1.5',
         ]);
 
-        $this->assertEquals(0, $this->commandTester->getStatusCode());
+        $this->assertEquals(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 }

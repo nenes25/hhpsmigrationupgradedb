@@ -109,6 +109,9 @@ class Upgrader
      */
     public function setRunMode(string $runMode): self
     {
+        if (!in_array($runMode, [self::RUN_MODE_STANDARD, self::RUN_MODE_DRY_RUN])) {
+            throw new \InvalidArgumentException(sprintf('Invalid run mode "%s"', $runMode));
+        }
         $this->runMode = $runMode;
 
         return $this;
@@ -233,7 +236,7 @@ class Upgrader
      *
      * @return void
      */
-    protected function runPhpQuery(string $upgrade_file, string $query)
+    protected function runPhpQuery(string $upgrade_file, string $query): void
     {
         // Parsing php code
         $pos = strpos($query, '/* PHP:') + strlen('/* PHP:');
@@ -283,12 +286,13 @@ class Upgrader
         }
 
         if (isset($phpRes) && (is_array($phpRes) && !empty($phpRes['error'])) || $phpRes === false) {
-            $this->logger->error('
-                [ERROR] PHP ' . $upgrade_file . ' ' . $query . "\n" . '
-                ' . (empty($phpRes['error']) ? '' : $phpRes['error'] . "\n") . '
-                ' . (empty($phpRes['msg']) ? '' : ' - ' . $phpRes['msg'] . "\n"));
+            $this->logger->error(
+                '[ERROR] PHP ' . $upgrade_file . ' ' . $query . "\n"
+                . (empty($phpRes['error']) ? '' : $phpRes['error'] . "\n")
+                . (empty($phpRes['msg']) ? '' : ' - ' . $phpRes['msg'] . "\n")
+            );
         } else {
-            $this->logger->debug('<div class="upgradeDbOk">[OK] PHP ' . $upgrade_file . ' : ' . $query . '</div>');
+            $this->logger->debug('[OK] PHP ' . $upgrade_file . ' : ' . $query);
         }
     }
 
@@ -315,12 +319,12 @@ class Upgrader
     /**
      * Run Sql Query (Fonction from module Autoupgrade)
      *
-     * @param $upgrade_file
-     * @param $query
+     * @param string $upgrade_file
+     * @param string $query
      *
      * @return void
      */
-    protected function runSqlQuery($upgrade_file, $query)
+    protected function runSqlQuery(string $upgrade_file, string $query): void
     {
         if (strstr($query, 'CREATE TABLE') !== false) {
             $pattern = '/CREATE TABLE.*[`]*' . _DB_PREFIX_ . '([^`]*)[`]*\s\(/';
@@ -334,17 +338,14 @@ class Upgrader
         }
 
         if ($this->db->execute($query, false)) {
-            $this->logger->debug('<div class="upgradeDbOk">[OK] SQL ' . $upgrade_file . ' ' . $query . '</div>');
+            $this->logger->debug('[OK] SQL ' . $upgrade_file . ' ' . $query);
 
             return;
         }
 
         $error = $this->db->getMsgError();
         $error_number = $this->db->getNumberError();
-        $this->logger->warning('
-            <div class="upgradeDbError">
-            [WARNING] SQL ' . $upgrade_file . '
-            ' . $error_number . ' in ' . $query . ': ' . $error . '</div>');
+        $this->logger->warning('[WARNING] SQL ' . $upgrade_file . ' ' . $error_number . ' in ' . $query . ': ' . $error);
 
         $duplicates = ['1050', '1054', '1060', '1061', '1062', '1091'];
         if (!in_array($error_number, $duplicates)) {

@@ -170,6 +170,12 @@ class UpgraderTest extends TestCase
         $this->assertEquals('dry-run', Upgrader::RUN_MODE_DRY_RUN);
     }
 
+    public function testSetRunModeThrowsExceptionForInvalidMode()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->upgrader->setRunMode('invalid-mode');
+    }
+
     public function testGetUpgradeSqlFilesListThrowsExceptionWhenDirectoryNotExists()
     {
         $this->expectException(\PrestaShop\Module\AutoUpgrade\UpgradeException::class);
