@@ -37,14 +37,15 @@ class ApplyPrestashopDbUpgrade extends Command
         $this
             ->setName('hhennes:psmigration:upgrade-db')
             ->setDescription('Apply db upgrade from current version to last version')
-            ->addArgument('from-version', InputArgument::REQUIRED, 'Version from where the db upgrade should start')
-            ->addArgument('to-version', InputArgument::REQUIRED, 'Last where the db upgrade should stop')
+            ->addArgument('from-version', InputArgument::OPTIONAL, 'Version from where the db upgrade should start (defaults to current DB version)')
+            ->addArgument('to-version', InputArgument::OPTIONAL, 'Last version where the db upgrade should stop')
             ->addOption('get-version', null, InputOption::VALUE_NONE, 'Get the current db Version')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Get only the list of db upgrades to apply')
             ->addOption('no-db-config-update', null, InputOption::VALUE_NONE, 'Do not update the PS_VERSION_DB configuration')
             ->setHelp(
                 'This command allow to run db upgrade of the module autoupgrade without running it directly' . PHP_EOL
                 . 'Thus it allows to push the code through CI/CD or to run this command to finish the upgrade after the push' . PHP_EOL
+                . 'If from-version is omitted, the current DB version (PS_VERSION_DB) is used automatically' . PHP_EOL
                 . 'You can also get only the current db version with option --get-version' . PHP_EOL
                 . 'And the list of upgrades which will be applied with the option --dry-run'
             );
@@ -58,25 +59,32 @@ class ApplyPrestashopDbUpgrade extends Command
         if ($input->getOption('get-version')) {
             $output->writeln(sprintf('<info>Current Db installed version : %s</info>', $this->getCurrentVersion()));
 
-            return 0;
+            return Command::SUCCESS;
         }
+
+        $fromVersion = $input->getArgument('from-version') ?? $this->getCurrentVersion();
+        $toVersion = $input->getArgument('to-version');
+
+        if (!$toVersion) {
+            $output->writeln('<error>Argument to-version is required</error>');
+
+            return Command::FAILURE;
+        }
+
         if (!\Module::getInstanceByName('autoupgrade') || !\Module::isInstalled('autoupgrade')) {
             $output->writeln(
                 '<error>The module autoupgrade is required and should be installed to use this tool</error>'
             );
 
-            return 1;
+            return Command::FAILURE;
         }
-
-        $fromVersion = $input->getArgument('from-version');
-        $toVersion = $input->getArgument('to-version');
-        $dryRun = $input->getOption('dry-run');
 
         if (!$this->isvalidPsVersion($fromVersion) || !$this->isvalidPsVersion($toVersion)) {
             $output->writeln('<error>Please enter valid from and to versions</error>');
 
-            return 1;
+            return Command::FAILURE;
         }
+
         $output->writeln('<info>Upgrade process start</info>');
         try {
             $logger = new ConsoleLogger($output);
@@ -84,7 +92,7 @@ class ApplyPrestashopDbUpgrade extends Command
             $dbUpgrader
                 ->setOldVersion($fromVersion)
                 ->setDestinationVersion($toVersion);
-            if (false !== $dryRun) {
+            if ($input->getOption('dry-run')) {
                 $output->writeln('<comment>==== Dry run mode, nothing will be applied ===</comment>');
                 $dbUpgrader->setRunMode(Upgrader::RUN_MODE_DRY_RUN);
             }
@@ -97,10 +105,10 @@ class ApplyPrestashopDbUpgrade extends Command
             $output->writeln('<error>Unable to apply upgrade, please check logs</error>');
             $logger->error('Error : ' . $e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
