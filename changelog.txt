@@ -5,4 +5,4 @@
 2025-10-22: 0.1.4
                             Technical update to prepare for next versions
                             - #4 Add option to upgrade PS_VERSION_DB #4
-2025-04-24: 0.1.5 #3 Allow to upgrade to prestashop 9.0.0
+2026-04-24: 0.1.5 #3 Allow to upgrade to prestashop 9.0.0
