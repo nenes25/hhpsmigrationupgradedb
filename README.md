@@ -63,9 +63,7 @@ Feel free to adapt it if you are using older versions.
 | Under 7.4   | :x:                                |
 | 7.4         | :heavy_check_mark:     until 0.1.4 |
 | 8.1         | :heavy_check_mark:                 |
-| 8.2         | :interrobang: Not yet tested       |
-| 8.3         | :interrobang: Not yet tested       |
-| 8.4         | :interrobang: Not yet tested       |
+| 8.2         | :heavy_check_mark:                 |
+| 8.3         | :heavy_check_mark:                 |
+| 8.4         | :heavy_check_mark:                 |
 | 8.5         | :interrobang: Not yet tested       |
-
-To verify compatibility on a specific PHP version, use the Docker environment described in [`_dev/README.md`](_dev/README.md).
