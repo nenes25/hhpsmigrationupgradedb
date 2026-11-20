@@ -7,3 +7,4 @@
                             - #4 Add option to upgrade PS_VERSION_DB #4
 2026-04-24: 0.1.5 #3 Allow to upgrade to prestashop 9.0.0
 2026-05-11: 0.1.6  : #20 Various update for command
+2026-11-20: 0.1.7 Allow to upgrade to prestashop 9.2 and do not update PS_VERSION_DB in dry-run mode
